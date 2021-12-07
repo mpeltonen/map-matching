@@ -1,0 +1,11 @@
+{
+ :deps     true
+
+ :dev-http {8000 "resources/public"}
+
+ :builds
+ {:app {:target     :browser
+        :output-dir "resources/public/assets/js/compiled"
+        :asset-path "assets/js/compiled"
+        :modules    {:main
+                     {:init-fn map-matching.client.main/main}}}}}
