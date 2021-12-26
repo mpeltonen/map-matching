@@ -13,7 +13,7 @@
 (defn- get-default-map-center []
   (proj/fromLonLat (clj->js default-map-center)))
 
-(defn setup-map []
+(defn setup-map [target-id]
   (let [layers #js [
                     (Tile. #js {
                                 :source (OSM.)})]
@@ -21,7 +21,7 @@
                          :zoom default-zoom-level
                          :center (get-default-map-center)})
         map (Map. #js {
-                       :target "map"
+                       :target target-id
                        :layers layers
                        :view view})]
     (reset! ol-view view)

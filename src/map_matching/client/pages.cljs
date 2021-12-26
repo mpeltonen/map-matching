@@ -12,13 +12,15 @@
   (go (let [resp (<! (api-client/get-time))]
         (reset! tm (:time (:body resp))))))
 
+(def map-element-id "map")
+
 (defn index []
   (let [[count set-count] (react/useState 0)]
-    (react/useEffect #(ol-map/setup-map) #js [])
+    (react/useEffect #(ol-map/setup-map map-element-id) #js [])
     [:div
      [:p (str "Count: " count)]
      [:p (str "Time: " @tm)]
      [:button {:on-click #(set-count (inc count))} "Inc count"]
      [:button {:on-click get-time} "Get time"]
      [:button {:on-click ol-map/center-map } "Reset view"]
-     [:div#map {:style {:height "100vh" :width "100vw"}}]]))
+     [:div {:id map-element-id :style {:height "100vh" :width "100vw"}}]]))
