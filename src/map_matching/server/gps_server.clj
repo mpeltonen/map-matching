@@ -51,15 +51,17 @@
             (handle-avl-message in-stream out-stream)
             (.close socket)))))))
 
+(defn remote-addr [socket]
+  (str (.getRemoteSocketAddress socket)))
+
 (defn finalize-connection [socket]
-  (let [remote-addr (str (.getRemoteSocketAddress socket))]
-    (when-not (.isClosed socket)
-      (.close socket))
-    (println "Connection from" remote-addr "closed")))
+  (when-not (.isClosed socket)
+    (.close socket))
+  (println "Connection from" (remote-addr socket) "closed"))
 
 (defn accept-connection [server-socket]
   (let [socket (.accept server-socket)]
-    (println "New connection from" (str (.getRemoteSocketAddress socket)))
+    (println "New connection from" (remote-addr socket))
     (future
       (try (handle-tcp-connection socket)
            (finally
