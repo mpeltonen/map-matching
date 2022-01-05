@@ -2,7 +2,7 @@
  :deps  {org.clojure/clojure {:mvn/version "1.10.3"}
          com.graphhopper/graphhopper-map-matching {:mvn/version "4.0"}
          ring/ring {:mvn/version "1.9.4"}
-         ring/ring-jetty-adapter {:mvn/version "1.9.4"}
+         info.sunng/ring-jetty9-adapter {:mvn/version "0.17.0"}
          ring/ring-json {:mvn/version "0.5.1"}
          metosin/reitit {:mvn/version "0.5.15"}
-         org.slf4j/slf4j-log4j12 {:mvn/version "1.7.30"}}}
+         org.slf4j/slf4j-log4j12 {:mvn/version "2.0.0-alpha5"}}}

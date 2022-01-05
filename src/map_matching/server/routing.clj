@@ -4,7 +4,8 @@
     [ring.middleware.reload :refer [wrap-reload]]
     [reitit.ring.middleware.parameters :refer [parameters-middleware]]
     [reitit.ring :as ring]
-    [map-matching.server.handlers :as handlers]))
+    [map-matching.server.handlers :as handlers]
+    [map-matching.server.websocket :as ws]))
 
 (def api-middlewares
   [wrap-json-response
@@ -13,8 +14,9 @@
 (def router
   (ring/ring-handler
     (ring/router
-      ["/api" {:middleware api-middlewares}
-       ["/time" {:get handlers/get-time}]]
+      [["/api" {:middleware api-middlewares}
+        ["/time" {:get handlers/get-time}]]
+       ["/websocket" {:get ws/handle-ws-request}]]
       {:data
        {:middleware [wrap-reload]}})
     (ring/routes
