@@ -1,5 +1,7 @@
 (ns map-matching.client.main
-  (:require [map-matching.client.app :as app]))
+  (:require [map-matching.client.app :as app]
+            [map-matching.client.websocket :as ws]))
 
 (defn main []
-      (app/mount-root))
+      (app/mount-root)
+      (ws/init))
