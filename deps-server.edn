@@ -5,4 +5,5 @@
          info.sunng/ring-jetty9-adapter {:mvn/version "0.17.0"}
          ring/ring-json {:mvn/version "0.5.1"}
          metosin/reitit {:mvn/version "0.5.15"}
-         org.slf4j/slf4j-log4j12 {:mvn/version "2.0.0-alpha5"}}}
+         org.slf4j/slf4j-log4j12 {:mvn/version "2.0.0-alpha5"}
+         jarohen/chime {:mvn/version "0.3.3"}}}
