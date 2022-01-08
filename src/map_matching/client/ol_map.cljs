@@ -16,6 +16,11 @@
 
 (defonce ol-view (atom nil))
 (defonce ol-map (atom nil))
+(defonce gps-locators (atom {}))
+
+(defn set-tracker-location [{:keys [imei lat lon]}]
+  (swap! gps-locators update-in [imei]
+         (fn [] {:lat lat :lon lon})))
 
 (defn- get-default-map-center []
   (proj/fromLonLat (clj->js default-map-center)))

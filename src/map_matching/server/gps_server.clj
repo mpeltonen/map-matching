@@ -1,6 +1,8 @@
 (ns map-matching.server.gps-server
   (:require
-    [clojure.java.io :as io])
+    [clojure.java.io :as io]
+    [map-matching.server.websocket :as ws]
+    [clojure.pprint :refer [pprint]])
   (:import [java.net InetAddress ServerSocket Socket SocketException]
            [java.io DataInputStream DataOutputStream]
            [java.util Date]))
@@ -19,9 +21,10 @@
         imei (String. imei-buf)]
     (println "Received offer for IMEI" (format "%s," imei) "accepting")
     (.writeByte out-stream 1)
-    (.flush out-stream)))
+    (.flush out-stream)
+    imei))
 
-(defn handle-avl-message [in-stream out-stream]
+(defn handle-avl-message [imei in-stream out-stream]
   (let [msg-length (read-unsigned in-stream 4)
         codec-type (.readUnsignedByte in-stream)
         num-records-1 (.readUnsignedByte in-stream)
@@ -33,22 +36,24 @@
         speed (.readUnsignedShort in-stream)]
     (println "Received AVL message for codec" (format "0x%02x," codec-type) "length" msg-length "bytes," num-records-1 "data record(s)")
     (println "Time:" (str (Date. ts)) "priority:" priority "latitude:" lat "longitude:" lon "speed:" speed)
+    (ws/broadcast-msg (with-out-str (pprint {:imei imei :lat lat :lon lon})))
     (.write out-stream (byte-array [0 0 0 num-records-1]) 0 4)
     (.flush out-stream)))
 
 (defn handle-tcp-connection [socket]
   (let [in-stream (DataInputStream. (io/input-stream socket))
-        out-stream (DataOutputStream. (io/output-stream socket))]
+        out-stream (DataOutputStream. (io/output-stream socket))
+        imei (atom nil)]
     (while (not (.isClosed socket))
       ;; See https://wiki.teltonika-gps.com/view/Teltonika_Data_Sending_Protocols,
       ;; "Communication with server" section(s).
       (let [preamble16 (.readUnsignedShort in-stream)]
         (if (> preamble16 0)
           (do
-            (handle-imei-message preamble16 in-stream out-stream))
+            (reset! imei (handle-imei-message preamble16 in-stream out-stream)))
           (do
             (.skipBytes in-stream 2)
-            (handle-avl-message in-stream out-stream)
+            (handle-avl-message @imei in-stream out-stream)
             (.close socket)))))))
 
 (defn remote-addr [socket]
