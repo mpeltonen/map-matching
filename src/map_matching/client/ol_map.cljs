@@ -1,12 +1,12 @@
 (ns map-matching.client.ol-map
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require ["ol" :refer [Map, View]]
+  (:require ["ol" :refer [Map, View, Feature]]
             ["ol/layer/Tile" :default TileLayer]
             ["ol/layer/Vector" :default VectorLayer]
             ["ol/source/OSM" :default OSM]
             ["ol/source/Vector" :default VectorSource]
-            ["ol/style/Style" :default Style]
-            ["ol/style/Stroke" :default Stroke]
+            ["ol/style" :refer [Style, Stroke, Circle, Fill]]
+            ["ol/geom/Point" :default Point]
             ["ol/format/GeoJSON" :default GeoJSON]
             ["ol/proj" :as proj]
             [map-matching.client.api-client :as api-client]))
@@ -16,11 +16,40 @@
 
 (defonce ol-view (atom nil))
 (defonce ol-map (atom nil))
-(defonce gps-locators (atom {}))
+(defonce gps-trackers (atom {}))
+(defonce gps-tracker-markers (atom {}))
+
+(defn- add-marker [imei]
+  (let [feature (Feature.)
+        source (VectorSource. #js {
+                                   :features (clj->js [feature])})
+        stroke (Stroke. #js {
+                             :color "blue"
+                             :width "2"})
+        fill (Fill. #js {
+                         :color "red"})
+        style (Style. #js {
+                           :image (Circle. #js {
+                                                :radius 4
+                                                :stroke stroke
+                                                :fill fill})})
+        layer-config {:source source :style style}]
+    (.addLayer @ol-map (VectorLayer. (clj->js layer-config)))
+    (swap! gps-tracker-markers assoc-in [imei] feature)))
+
+(defn- update-marker-position [imei lat lon]
+  (let [marker-feature (get @gps-tracker-markers imei)
+        pos (proj/fromLonLat (clj->js [lon lat]))
+        point (Point. pos)]
+    (.setGeometry marker-feature point)))
 
 (defn set-tracker-location [{:keys [imei lat lon]}]
-  (swap! gps-locators update-in [imei]
-         (fn [] {:lat lat :lon lon})))
+  (swap! gps-trackers assoc-in [imei] {:lat lat :lon lon})
+  (when-not (get @gps-tracker-markers imei)
+    (js/console.log "Adding new marker for IMEI" imei)
+    (add-marker imei))
+  (js/console.log "Updating marker position for IMEI" imei)
+  (update-marker-position imei lat lon))
 
 (defn- get-default-map-center []
   (proj/fromLonLat (clj->js default-map-center)))
