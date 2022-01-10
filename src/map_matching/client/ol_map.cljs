@@ -71,20 +71,21 @@
 (def select-style (Style. #js {:fill (Fill. #js {:color "#eeeeee"})
                                :stroke (Stroke. #js {:color "rgba(255, 0, 0, 0.6)"
                                                      :width 6})}))
-(def hovered-feature (atom nil))
+(def selected-feature (atom nil))
 
-(defn replace-hovered-feature [new-feat]
-  (when @hovered-feature
-    (.setStyle @hovered-feature js/undefined))
-  (reset! hovered-feature new-feat))
+(defn set-selected-feature [new-feat]
+  (when @selected-feature
+    (.setStyle @selected-feature js/undefined))
+  (reset! selected-feature new-feat))
 
-(defn on-pointermove [e]
-  (let [pixel (.-pixel e)]
-    (replace-hovered-feature nil)
+(defn on-pointermove-or-click [evt]
+  (let [pixel (.-pixel evt)]
+    (set-selected-feature nil)
     (.forEachFeatureAtPixel @ol-map pixel
                             (fn [feature] (do
                                             (.setStyle feature select-style)
-                                            (replace-hovered-feature feature))))))
+                                            (set-selected-feature feature)
+                                            true)))))
 
 (defn setup-map [target-id]
   (let [layers #js [
@@ -100,7 +101,8 @@
     (reset! ol-view view)
     (reset! ol-map map)
     (get-features)
-    (.on map "pointermove" on-pointermove)))
+    (.on map "pointermove" on-pointermove-or-click)
+    (.on map "click" on-pointermove-or-click)))
 
 
 (defn center-map []
