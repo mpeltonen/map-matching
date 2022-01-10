@@ -67,6 +67,25 @@
             geo-json (:body resp)]
         (render-features geo-json))))
 
+
+(def select-style (Style. #js {:fill (Fill. #js {:color "#eeeeee"})
+                               :stroke (Stroke. #js {:color "rgba(255, 0, 0, 0.6)"
+                                                     :width 6})}))
+(def hovered-feature (atom nil))
+
+(defn replace-hovered-feature [new-feat]
+  (when @hovered-feature
+    (.setStyle @hovered-feature js/undefined))
+  (reset! hovered-feature new-feat))
+
+(defn on-pointermove [e]
+  (let [pixel (.-pixel e)]
+    (replace-hovered-feature nil)
+    (.forEachFeatureAtPixel @ol-map pixel
+                            (fn [feature] (do
+                                            (.setStyle feature select-style)
+                                            (replace-hovered-feature feature))))))
+
 (defn setup-map [target-id]
   (let [layers #js [
                     (TileLayer. #js {
@@ -80,7 +99,9 @@
                        :view view})]
     (reset! ol-view view)
     (reset! ol-map map)
-    (get-features)))
+    (get-features)
+    (.on map "pointermove" on-pointermove)))
+
 
 (defn center-map []
   (let [size (.getSize @ol-map)
