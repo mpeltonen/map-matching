@@ -3,7 +3,9 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "name": "Kankaantie"
+      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
@@ -40,7 +42,9 @@
     },
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "name": "Lenkki 1/2"
+      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
@@ -113,7 +117,9 @@
     },
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "name": "Lenkki 2/2"
+      },
       "geometry": {
         "type": "LineString",
         "coordinates": [

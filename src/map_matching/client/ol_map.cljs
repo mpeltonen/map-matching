@@ -1,6 +1,6 @@
 (ns map-matching.client.ol-map
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require ["ol" :refer [Map, View, Feature]]
+  (:require ["ol" :refer [Map, View, Feature, Overlay]]
             ["ol/layer/Tile" :default TileLayer]
             ["ol/layer/Vector" :default VectorLayer]
             ["ol/source/OSM" :default OSM]
@@ -73,30 +73,39 @@
                                                      :width 6})}))
 (def selected-feature (atom nil))
 
-(defn set-selected-feature [new-feat]
+(defn set-selected-feature [feature overlay]
   (when @selected-feature
-    (.setStyle @selected-feature js/undefined))
-  (reset! selected-feature new-feat))
+    (.setStyle @selected-feature js/undefined)
+    (.setPosition overlay js/undefined))
+  (reset! selected-feature feature))
 
 (defn on-pointermove-or-click [evt]
-  (let [pixel (.-pixel evt)]
-    (set-selected-feature nil)
+  (let [pixel (.-pixel evt)
+        coordinate (.-coordinate evt)
+        overlay (.getOverlayById @ol-map 1)
+        popup-content-elem (.getElement overlay)]
+    (set-selected-feature nil overlay)
     (.forEachFeatureAtPixel @ol-map pixel
-                            (fn [feature] (do
+                            (fn [feature] (let [name (.get feature "name")]
                                             (.setStyle feature select-style)
-                                            (set-selected-feature feature)
+                                            (.setPosition overlay coordinate)
+                                            (set! (.-innerHTML popup-content-elem) (str "Name: " name))
+                                            (set-selected-feature feature overlay)
                                             true)))))
 
-(defn setup-map [target-id]
+(defn setup-map [target-id popup-elem]
   (let [layers #js [
                     (TileLayer. #js {
                                      :source (OSM.)})]
         view (View. #js {
                          :zoom default-zoom-level
                          :center (get-default-map-center)})
+        overlay (Overlay. #js {:id 1
+                               :element popup-elem})
         map (Map. #js {
                        :target target-id
                        :layers layers
+                       :overlays #js [overlay]
                        :view view})]
     (reset! ol-view view)
     (reset! ol-map map)
