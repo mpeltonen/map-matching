@@ -19,10 +19,13 @@
   (let [imei-buf (byte-array imei-length)
         _ (.read in-stream imei-buf 0 imei-length)
         imei (String. imei-buf)]
-    (println "Received offer for IMEI" (format "%s," imei) "accepting")
-    (.writeByte out-stream 1)
-    (.flush out-stream)
-    imei))
+    (if (every? #(Character/isDigit %) imei)
+      (do
+        (println "Received offer for IMEI" (format "%s," imei) "accepting")
+        (.writeByte out-stream 1)
+        (.flush out-stream)
+        imei)
+      (throw (IllegalStateException. "Illegal IMEI")))))
 
 (defn handle-avl-message [imei in-stream out-stream]
   (let [msg-length (read-unsigned in-stream 4)
@@ -49,12 +52,15 @@
       ;; "Communication with server" section(s).
       (let [preamble16 (.readUnsignedShort in-stream)]
         (if (> preamble16 0)
-          (do
+          (if (> preamble16 15)
+            (throw (IllegalStateException. "Illegal preamble"))
             (reset! imei (handle-imei-message preamble16 in-stream out-stream)))
-          (do
-            (.skipBytes in-stream 2)
-            (handle-avl-message @imei in-stream out-stream)
-            (.close socket)))))))
+          (if @imei
+            (do
+              (.skipBytes in-stream 2)
+              (handle-avl-message @imei in-stream out-stream)
+              (.close socket))
+            (throw (IllegalStateException. "No IMEI"))))))))
 
 (defn remote-addr [socket]
   (str (.getRemoteSocketAddress socket)))
@@ -69,6 +75,8 @@
     (println "New connection from" (remote-addr socket))
     (future
       (try (handle-tcp-connection socket)
+           (catch Exception e
+             (println (str "Error: " (.toString e))))
            (finally
              (finalize-connection socket))))))
 
@@ -82,5 +90,5 @@
         (try
           (accept-connection server-socket)
           (catch SocketException e
-            (println (str "caught exception: " (.toString e)))))))
+            (println (str "Error: " (.toString e)))))))
     (println "Started TCP server on port 7001")))
