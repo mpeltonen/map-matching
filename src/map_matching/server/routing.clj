@@ -3,6 +3,7 @@
     [ring.middleware.json :refer [wrap-json-response]]
     [ring.middleware.reload :refer [wrap-reload]]
     [reitit.ring.middleware.parameters :refer [parameters-middleware]]
+    [reitit.ring.middleware.exception :as exception]
     [reitit.ring :as ring]
     [map-matching.server.handlers :as handlers]
     [map-matching.server.websocket :as ws]))
@@ -18,7 +19,7 @@
         ["/time" {:get handlers/get-time}]]
        ["/websocket" {:get ws/handle-ws-request}]]
       {:data
-       {:middleware [wrap-reload]}})
+       {:middleware [wrap-reload exception/exception-middleware]}})
     (ring/routes
       (ring/create-resource-handler {:path "/"})
       (ring/create-default-handler))))
