@@ -6,4 +6,8 @@
          ring/ring-json {:mvn/version "0.5.1"}
          metosin/reitit {:mvn/version "0.5.15"}
          org.slf4j/slf4j-log4j12 {:mvn/version "2.0.0-alpha5"}
-         jarohen/chime {:mvn/version "0.3.3"}}}
+         jarohen/chime {:mvn/version "0.3.3"}
+         org.postgresql/postgresql {:mvn/version "42.3.1"}
+         com.github.seancorfield/next.jdbc {:mvn/version "1.2.761"}
+         com.zaxxer/HikariCP {:mvn/version "5.0.1"}
+         org.flywaydb/flyway-core {:mvn/version "8.4.2"}}}

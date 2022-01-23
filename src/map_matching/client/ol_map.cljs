@@ -65,7 +65,8 @@
 (defn- get-features []
   (go (let [resp (<! (api-client/get-features))
             geo-json (:body resp)]
-        (render-features geo-json))))
+        (if (not (empty? geo-json))
+          (render-features geo-json)))))
 
 
 (def select-style (Style. #js {:fill (Fill. #js {:color "#eeeeee"})

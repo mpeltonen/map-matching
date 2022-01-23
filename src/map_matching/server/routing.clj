@@ -16,7 +16,8 @@
   (ring/ring-handler
     (ring/router
       [["/api" {:middleware api-middlewares}
-        ["/time" {:get handlers/get-time}]]
+        ["/time" {:get handlers/get-time}]
+        ["/features" {:get handlers/get-features}]]
        ["/websocket" {:get ws/handle-ws-request}]]
       {:data
        {:middleware [wrap-reload exception/exception-middleware]}})

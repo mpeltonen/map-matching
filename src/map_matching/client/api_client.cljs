@@ -6,4 +6,4 @@
   (http/get "/api/time" {:query-params {"foo" "bar"}}))
 
 (defn get-features []
-  (http/get "/assets/geojson/features.json"))
+  (http/get "/api/features"))
