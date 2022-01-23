@@ -52,9 +52,9 @@
       ;; "Communication with server" section(s).
       (let [preamble16 (.readUnsignedShort in-stream)]
         (if (> preamble16 0)
-          (if (> preamble16 15)
-            (throw (IllegalStateException. "Illegal preamble"))
-            (reset! imei (handle-imei-message preamble16 in-stream out-stream)))
+          (if (<= preamble16 15)
+            (reset! imei (handle-imei-message preamble16 in-stream out-stream))
+            (throw (IllegalStateException. "Illegal preamble")))
           (if @imei
             (do
               (.skipBytes in-stream 2)
