@@ -6,5 +6,5 @@
 (defn json-response [body]
   (header (response body) "Content-Type" "application/json"))
 
-(defn get-features []
+(defn get-features [_]
   (json-response (db/get-features)))
