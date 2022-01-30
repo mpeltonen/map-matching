@@ -4,8 +4,7 @@
     [ring.adapter.jetty9 :as jetty]
     [clojure.pprint :as pp]
     [chime.core :refer [chime-at periodic-seq]])
-  (:import [java.time Instant Duration]
-           [java.util Date]))
+  (:import [java.time Instant Duration]))
 
 (defonce ws-clients (atom #{}))
 
@@ -25,9 +24,8 @@
   (tap> [:ws :connect (str (jetty/remote-addr ws))])
   (swap! ws-clients conj ws))
 
-(defn- on-text [ws text-message]
-  (tap> [:ws :msg text-message])
-  (jetty/send! ws (str "echo: " text-message)))
+(defn- on-text [_ text-message]
+  (tap> [:ws :msg text-message]))
 
 (defn- on-close [ws status-code reason]
   (tap> [:ws :close status-code reason])

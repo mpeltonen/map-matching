@@ -6,9 +6,5 @@
 (defn json-response [body]
   (header (response body) "Content-Type" "application/json"))
 
-(defn get-time [req]
-  (clojure.pprint/pprint {:headers (:headers req) :query-params (:query-params req)})
-  (response {:time (.toString (java.util.Date.))}))
-
-(defn get-features [req]
+(defn get-features []
   (json-response (db/get-features)))
