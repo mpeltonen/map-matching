@@ -1,6 +1,12 @@
 {
+  "scripts": {
+    "shadow:watch": "shadow-cljs watch app",
+    "start-dev": "concurrently -n shadow-cljs,database -c blue,red \"npm run shadow:watch\" \"docker compose up\"",
+    "start:server": "lein run"
+  },
   "devDependencies": {
-    "shadow-cljs": "^2.16.7"
+    "shadow-cljs": "^2.16.7",
+    "concurrently": "^7.0.0"
   },
   "dependencies": {
     "ol": "^6.9.0",
