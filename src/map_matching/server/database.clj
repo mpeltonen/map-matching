@@ -8,7 +8,7 @@
 
 (def db-url (System/getenv "DATABASE_URL"))
 
-(def pool (connection/->pool HikariDataSource {:jdbcUrl db-url}))
+(defonce pool (connection/->pool HikariDataSource {:jdbcUrl db-url}))
 
 (defn flyway-migrate []
   (-> (Flyway/configure)
