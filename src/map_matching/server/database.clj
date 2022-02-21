@@ -45,12 +45,17 @@
    on conflict (uuid) do update
    set name = excluded.name, geom = excluded.geom")
 
-(defn insert-feature [f]
+(defn- insert-feature [f tx]
   (let [coords (:coordinates (:geometry f))
         coords-wkt (clojure.string/join "," (map #(str (first %) " " (second %)) coords))
         geom-wkt (str "LINESTRING(" coords-wkt ")")]
-    (with-open [conn (jdbc/get-connection pool)]
-      (jdbc/execute-one! conn [insert-feature-sql
-                               (:id f)
-                               (:name (:properties f))
-                               geom-wkt]))))
+    (jdbc/execute-one! tx [insert-feature-sql
+                           (:id f)
+                           (:name (:properties f))
+                           geom-wkt])))
+
+(defn save-featurecollection [fc]
+  (let [features (:features fc)]
+    (jdbc/with-transaction [tx pool]
+      (doseq [f features]
+        (insert-feature f tx)))))

@@ -1,7 +1,6 @@
 (ns map-matching.server.handlers
   (:require
     [map-matching.server.database :as db]
-    [map-matching.server.geojson :as geojson]
     [ring.util.response :refer [response header status]]))
 
 (defn resp [body status-code content-type]
@@ -22,7 +21,7 @@
 (defn post-features [req]
   (let [body (:body-params req)]
     (try
-      (geojson/save-featurecollection body)
+      (db/save-featurecollection body)
       (ok-json-response [])
       (catch Exception e
         (do
