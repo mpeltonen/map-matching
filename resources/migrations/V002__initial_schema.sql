@@ -1,5 +1,9 @@
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 create table feature
 (
     id      serial primary key,
-    geojson json not null
+    uuid    char(36) unique,
+    name    varchar unique,
+    geom    geography(LINESTRING) unique
 );
