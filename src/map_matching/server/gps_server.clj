@@ -46,7 +46,7 @@
   (dotimes [_ count]
     (let [n-io-id (read-unsigned in-stream 2)
           n-value (read-unsigned in-stream len)]
-      (println (get avl-props n-io-id (str "AVL ID " n-io-id)) "=" n-value))))
+      (print (str (get avl-props n-io-id (str "AVL ID " n-io-id)) "=" n-value ", ")))))
 
 (defn read-io-element-8e [in-stream]
   (let [io-id (read-unsigned in-stream 2)
@@ -84,7 +84,7 @@
       (handle-avl-record imei codec-type in-stream))
     (let [num-records-2 (.readUnsignedByte in-stream)
           crc (read-unsigned in-stream 4)]
-      (println "NR1 == NR2:" (= num-records-1 num-records-2))
+      (println "NR1==NR2:" (= num-records-1 num-records-2))
       (println "CRC:" crc)
       (.write out-stream (byte-array [0 0 0 num-records-1]) 0 4)
       (.flush out-stream))))
