@@ -59,8 +59,8 @@
     (dotimes [_ (read-unsigned in-stream 2)]
       (let [nx-io-id (read-unsigned in-stream 2)
             nx-io-len (read-unsigned in-stream 2)
-            nx-value (read-unsigned in-stream nx-io-len)]
-        (println "AVL ID:" nx-io-id "length:" nx-io-len "value:" nx-value)))))
+            _ (.skipBytes in-stream nx-io-len)]
+        (println "Unsupported variable length AVL ID:" nx-io-id "length:" nx-io-len)))))
 
 (defn handle-avl-record [imei codec-type in-stream]
   (let [ts (read-unsigned in-stream 8)
