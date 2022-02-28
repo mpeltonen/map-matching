@@ -68,7 +68,7 @@
         lat (double (/ (read-unsigned in-stream 4) 1e7))
         _ (.skipBytes in-stream 5) ; Skip altitude, angle & satellites
         speed (read-unsigned in-stream 2)]
-    (println "Time:" (str (Date. ts)) "priority:" priority "latitude:" lat "longitude:" lon "speed:" speed)
+    (println "\nTime:" (str (Date. ts)) "priority:" priority "latitude:" lat "longitude:" lon "speed:" speed)
     (cond
       (= 142 codec-type) (read-io-element-8e in-stream)
       :else (throw (RuntimeException. (str "Unsupported codec: " codec-type))))
