@@ -16,7 +16,7 @@
   (resp body 500 "text/plain"))
 
 (defn get-features [_]
-  (ok-json-response (db/get-features)))
+  (ok-json-response (db/get-featurecollection)))
 
 (defn post-features [req]
   (let [body (:body-params req)]

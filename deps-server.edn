@@ -9,4 +9,6 @@
          org.postgresql/postgresql {:mvn/version "42.3.1"}
          com.github.seancorfield/next.jdbc {:mvn/version "1.2.761"}
          com.zaxxer/HikariCP {:mvn/version "5.0.1"}
+         org.clojure/data.json {:mvn/version "2.4.0"}
+         org.clojure/data.xml {:mvn/version "0.0.8"}
          org.flywaydb/flyway-core {:mvn/version "8.4.2"}}}
