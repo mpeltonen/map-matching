@@ -1,6 +1,7 @@
 (ns map-matching.server.codec.teltonika
   (:require
     [clojure.java.io :as io]
+    [map-matching.server.database :as db]
     [map-matching.server.websocket :as ws]
     [clojure.pprint :refer [pprint]])
   (:import [java.io DataInputStream DataOutputStream]
@@ -69,6 +70,7 @@
         _ (.skipBytes in-stream 5) ; Skip altitude, angle & satellites
         speed (read-unsigned in-stream 2)]
     (println "\nTime:" (str (Date. ts)) "priority:" priority "latitude:" lat "longitude:" lon "speed:" speed)
+    (db/insert-location ts imei lat lon)
     (cond
       (= 142 codec-type) (read-io-element-8e in-stream)
       :else (throw (RuntimeException. (str "Unsupported codec: " codec-type))))

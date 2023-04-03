@@ -70,3 +70,15 @@
     (jdbc/with-transaction [tx pool]
       (doseq [f features]
         (insert-feature f tx)))))
+
+(def insert-location-sql
+  "insert into tracker_location (timestamp, imei, location)
+   values (to_timestamp(?), ?, ST_GeomFromText(?))")
+
+(defn insert-location [ts imei lat lon]
+  (let [geom-wkt (str "POINT(" (str lat) " " (str lon) ")")]
+    (jdbc/with-transaction [tx pool]
+      (jdbc/execute-one! tx [insert-location-sql
+                             (/ ts 1000)
+                             imei
+                             geom-wkt]))))
