@@ -1,4 +1,6 @@
 {:paths ["src" "test"]
- :deps  {thheller/shadow-cljs {:mvn/version "2.16.6"}
-         reagent/reagent      {:mvn/version "1.1.0"}
-         cljs-http/cljs-http {:mvn/version "0.1.46"}}}
+ :deps  {thheller/shadow-cljs {:mvn/version "2.22.0"}
+         reagent/reagent      {:mvn/version "1.2.0"}
+         cljs-http/cljs-http {:mvn/version "0.1.46"}}
+ :aliases {:outdated {:replace-deps {olical/depot {:mvn/version "2.3.0"}}
+                      :main-opts ["-m" "depot.outdated.main"]}}}

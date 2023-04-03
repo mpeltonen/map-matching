@@ -5,8 +5,8 @@
     "start:server": "lein run"
   },
   "devDependencies": {
-    "shadow-cljs": "^2.16.7",
-    "concurrently": "^7.0.0"
+    "concurrently": "^7.0.0",
+    "shadow-cljs": "^2.16.7"
   },
   "dependencies": {
     "ol": "^6.9.0",
