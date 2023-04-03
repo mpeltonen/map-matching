@@ -87,10 +87,11 @@
         popup-content-elem (.getElement overlay)]
     (set-selected-feature nil overlay)
     (.forEachFeatureAtPixel @ol-map pixel
-                            (fn [feature] (let [name (.get feature "name")]
+                            (fn [feature] (let [name (.get feature "name")
+                                                id   (.get feature "way_id")]
                                             (.setStyle feature select-style)
                                             (.setPosition overlay coordinate)
-                                            (set! (.-innerHTML popup-content-elem) (str "Name: " name))
+                                            (set! (.-innerHTML popup-content-elem) (str "Name: " name ", Way ID: " id))
                                             (set-selected-feature feature overlay)
                                             true)))))
 
