@@ -2,7 +2,9 @@
   (:require [next.jdbc :as jdbc]
             [next.jdbc.sql :as sql]
             [next.jdbc.result-set :as rs]
-            [next.jdbc.connection :as connection])
+            [next.jdbc.connection :as connection]
+            [clojure.data.json :as json]
+            [clojure.data.xml :as xml])
   (:import (com.zaxxer.hikari HikariDataSource)
            (org.flywaydb.core Flyway)))
 
@@ -27,21 +29,30 @@
        'type', 'Feature',
        'id', uuid,
        'geometry', ST_AsGeoJSON(geom)::jsonb,
-       'properties', to_jsonb(feature.*) - 'id' - 'uuid' - 'geom'
+       'properties', to_jsonb(feature.*) - 'uuid' - 'geom'
      ) as features
      from feature
      where geom is not null) as tmp")
 
-(defn get-features []
+(defn get-featurecollection []
   (with-open [conn (jdbc/get-connection pool)]
     (let [res (first (sql/query conn [feature-collection-sql]))]
       (if-not (empty? res)
         (str (:feature_collection res))
         "{}"))))
 
+(defn get-features []
+  (with-open [conn (jdbc/get-connection pool)]
+    (let [read-geojson-col #(json/read-str (str (:geojson %)) :key-fn keyword)]
+      (->> (sql/query conn ["select uuid, name, way_id, ST_AsGeoJSON(geom)::jsonb as geojson from feature"])
+           (mapv #(hash-map :id (:feature/uuid %)
+                            :name (:feature/name %)
+                            :way_id (:feature/way_id %)
+                            :nodes (:coordinates (read-geojson-col %))))))))
+
 (def insert-feature-sql
   "insert into feature (uuid, name, geom)
-   values (?, ?, ST_GeomFromText(?))
+   values (?::uuid, ?, ST_GeomFromText(?))
    on conflict (uuid) do update
    set name = excluded.name, geom = excluded.geom")
 
