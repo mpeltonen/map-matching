@@ -26,7 +26,7 @@
   (not (.isClosed server-socket)))
 
 (defn start-gps-server []
-  (let [server-socket (ServerSocket. 7001 10 (InetAddress/getByName "127.0.0.1"))]
+  (let [server-socket (ServerSocket. 7001 10)]
     (future
       (while (running? server-socket)
         (try
